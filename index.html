@@ -32,6 +32,17 @@
     }
   </script>
 
+  <!-- Script d'inicialització del tema (evita parpelleig) -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
+  </script>
+
   <!-- KaTeX per a notació científica i matemàtica -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -63,68 +74,86 @@
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #f1f5f9;
     }
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 3px;
     }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen font-sans flex flex-col justify-between">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-200">
 
   <!-- CAPÇALERA -->
-  <header class="bg-white border-b border-slate-200 p-3 shadow-sm">
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-3 shadow-sm transition-colors duration-200">
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
       
       <div class="flex items-center gap-3">
-        <div class="p-2 bg-sky-50 border border-sky-200 rounded-lg">
-          <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-2 bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 rounded-lg">
+          <svg class="w-6 h-6 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
           </svg>
         </div>
         <div>
-          <h1 class="text-lg font-bold text-sky-700 leading-tight">Taula Periòdica Interactiva</h1>
-          <p class="text-xs text-slate-500">Física i Química — Secundària i Batxillerat</p>
+          <h1 class="text-lg font-bold text-sky-700 dark:text-sky-400 leading-tight">Taula Periòdica Interactiva</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Física i Química — Secundària i Batxillerat</p>
         </div>
       </div>
 
       <!-- ENTRADA DE NOM DE L'ALUMNE -->
-      <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-        <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        <input type="text" id="student-name-input" placeholder="Nom de l'alumne/a..." class="bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-36 sm:w-48 font-medium">
+      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+        <svg class="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        <input type="text" id="student-name-input" placeholder="Nom de l'alumne/a..." class="bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none w-36 sm:w-48 font-medium">
       </div>
 
-      <!-- SELECTOR DE MODE -->
-      <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
+      <!-- SELECTOR DE MODE DE JOC -->
+      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700/50 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
         <button id="mode-sym-name" onclick="setGameMode('sym-name')" class="px-3 py-1.5 rounded-md font-medium transition-colors bg-sky-600 text-white shadow-sm">Símbol → Nom</button>
-        <button id="mode-name-sym" onclick="setGameMode('name-sym')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 hover:text-slate-900">Nom → Símbol</button>
-        <button id="mode-mixed" onclick="setGameMode('mixed')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 hover:text-slate-900">Mixt</button>
-        <button id="mode-study" onclick="setGameMode('study')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 hover:text-slate-900">Explorador</button>
+        <button id="mode-name-sym" onclick="setGameMode('name-sym')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">Nom → Símbol</button>
+        <button id="mode-mixed" onclick="setGameMode('mixed')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">Mixt</button>
+        <button id="mode-study" onclick="setGameMode('study')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">Explorador</button>
       </div>
 
-      <!-- MARCADOR I ACCIONS -->
+      <!-- MARCADOR, MODE FOSC I ACCIONS -->
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-4 bg-slate-100 px-4 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold">
-          <div class="text-emerald-700">Encerts: <span id="score-correct">0</span></div>
-          <div class="text-rose-700">Errors: <span id="score-incorrect">0</span></div>
-          <div class="text-amber-700">Ratxa: <span id="score-streak">0</span> 🔥</div>
+        <div class="flex items-center gap-4 bg-slate-100 dark:bg-slate-700/50 px-4 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+          <div class="text-emerald-700 dark:text-emerald-400">Encerts: <span id="score-correct">0</span></div>
+          <div class="text-rose-700 dark:text-rose-400">Errors: <span id="score-incorrect">0</span></div>
+          <div class="text-amber-700 dark:text-amber-400">Ratxa: <span id="score-streak">0</span> 🔥</div>
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- Botó Commutador de Mode Lluminós / Fosc -->
+          <button id="theme-toggle" onclick="toggleDarkMode()" title="Commutar entre mode lluminós i fosc" class="p-2 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center shrink-0">
+            <!-- Icona del Sol (Mode Fosc actiu) -->
+            <svg id="theme-toggle-sun" class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <!-- Icona de la Lluna (Mode Clar actiu) -->
+            <svg id="theme-toggle-moon" class="w-4 h-4 block dark:hidden text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+          </button>
+
           <!-- Botó Veure Errades -->
-          <button id="btn-mistakes" onclick="openMistakesModal()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <button id="btn-mistakes" onclick="openMistakesModal()" class="bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             <span id="mistakes-count-label">Errades (0)</span>
           </button>
 
           <!-- Botó Finalitzar i Veure Resum -->
           <button onclick="showFinalReportModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span>Finalitzar</span>
           </button>
 
           <!-- Botó Reiniciar -->
-          <button onclick="restartGameWithConfirmation()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <button onclick="restartGameWithConfirmation()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             <span>Reiniciar</span>
           </button>
         </div>
@@ -136,30 +165,27 @@
   <!-- SECCIÓ SUPERIOR: PANELL DE PREGUNTA I INTERACCIÓ -->
   <main class="max-w-7xl mx-auto w-full px-3 py-3 flex-grow flex flex-col gap-3">
     
-    <div id="question-card" class="bg-white border border-slate-200 rounded-xl p-4 shadow-md transition-all">
+    <div id="question-card" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-md transition-all">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         
         <!-- Targeta de Pregunta -->
         <div class="flex items-center gap-4 w-full md:w-auto">
-          <div id="target-display-box" class="w-20 h-20 bg-sky-50 border-2 border-sky-300 rounded-xl flex flex-col items-center justify-center shadow-sm relative">
-            <span id="target-z-katex" class="absolute top-1 left-2 text-[10px] text-sky-700 font-mono"></span>
-            <span id="target-main-text" class="text-2xl font-black text-slate-900"></span>
+          <div id="target-display-box" class="w-20 h-20 bg-sky-50 dark:bg-sky-950/50 border-2 border-sky-300 dark:border-sky-700 rounded-xl flex flex-col items-center justify-center shadow-sm relative">
+            <span id="target-z-katex" class="absolute top-1 left-2 text-[10px] text-sky-700 dark:text-sky-300 font-mono"></span>
+            <span id="target-main-text" class="text-2xl font-black text-slate-900 dark:text-white">Y</span>
           </div>
           <div>
-            <span id="question-prompt-type" class="text-xs uppercase tracking-wider text-sky-600 font-semibold"></span>
-            <h2 id="question-text" class="text-lg font-bold text-slate-900"></h2>
-            <p id="group-period-hint" class="text-xs text-slate-500 mt-0.5"></p>
+            <span id="question-prompt-type" class="text-xs uppercase tracking-wider text-sky-600 dark:text-sky-400 font-semibold">Símbol ➔ Nom</span>
+            <h2 id="question-text" class="text-lg font-bold text-slate-900 dark:text-white">Quin és el nom en català de l'element amb símbol Y?</h2>
+            <p id="group-period-hint" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Ubicació: Grup 3, Període 5</p>
           </div>
         </div>
 
         <!-- Formulari d'Entrada -->
         <div id="interaction-form" class="w-full md:w-auto flex-1 max-w-md flex flex-col gap-2">
           <div class="flex gap-2">
-            <input type="text" id="user-input" placeholder="Escriu la teva resposta..." autocomplete="off" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600 font-medium text-sm transition-all placeholder-slate-400">
-            <button id="btn-action" onclick="handleUserSubmit()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md">
-              <span>Comprovar</span>
-              <kbd class="hidden sm:inline-block bg-sky-700 px-1.5 py-0.5 rounded text-[10px] text-sky-100">Enter</kbd>
-            </button>
+            <input type="text" id="user-input" placeholder="Escriu la teva resposta..." autocomplete="off" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600 font-medium text-sm transition-all placeholder-slate-400 dark:placeholder-slate-500">
+            <button id="btn-action" onclick="handleUserSubmit()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md"><span>Comprovar</span><kbd class="hidden sm:inline-block bg-sky-700 px-1.5 py-0.5 rounded text-[10px] text-sky-100">Enter</kbd></button>
           </div>
           <!-- Retroalimentació pedagògica -->
           <div id="feedback-message" class="min-h-[24px] text-xs font-medium px-1 flex items-center gap-1.5"></div>
@@ -169,10 +195,10 @@
     </div>
 
     <!-- SECCIÓ INFERIOR: TAULA PERIÒDICA DE 18 COLUMNES -->
-    <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-md overflow-x-auto custom-scrollbar">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 shadow-md overflow-x-auto custom-scrollbar">
       
       <!-- Encapçalats de columnes (Grups 1 a 18) -->
-      <div class="pt-grid min-w-[850px] text-center text-[10px] text-slate-500 font-mono mb-1">
+      <div class="pt-grid min-w-[850px] text-center text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-1">
         <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
         <div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div>
         <div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
@@ -186,71 +212,71 @@
   </main>
 
   <!-- MODAL D'ERRADES -->
-  <div id="mistakes-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4 max-h-[80vh]">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h3 class="text-base font-bold text-rose-600 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+  <div id="mistakes-modal" class="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4 max-h-[80vh]">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           <span>Historial d'Errades Realitzades</span>
         </h3>
-        <button onclick="closeMistakesModal()" class="text-slate-400 hover:text-slate-700 font-bold p-1 rounded">✕</button>
+        <button onclick="closeMistakesModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold p-1 rounded">✕</button>
       </div>
       
       <div id="mistakes-list" class="overflow-y-auto flex-grow flex flex-col gap-2 pr-1 custom-scrollbar"></div>
 
-      <div class="flex justify-end pt-2 border-t border-slate-200">
-        <button onclick="closeMistakesModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg text-xs font-semibold">Tancar</button>
+      <div class="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-700">
+        <button onclick="closeMistakesModal()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold">Tancar</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL INFORME FINAL (NOM, DATA, HORA I PUNTUACIÓ) -->
-  <div id="final-report-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-sky-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-5 relative">
+  <div id="final-report-modal" class="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-5 relative">
       
-      <div class="text-center border-b border-slate-200 pb-4">
-        <div class="inline-flex p-3 bg-sky-50 border border-sky-200 rounded-full mb-2">
-          <svg class="w-8 h-8 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="text-center border-b border-slate-200 dark:border-slate-700 pb-4">
+        <div class="inline-flex p-3 bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 rounded-full mb-2">
+          <svg class="w-8 h-8 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h3 class="text-xl font-black text-slate-900">Informe de Rendiment Acadèmic</h3>
-        <p class="text-xs text-slate-500 mt-1">Pràctica de Nomenclatura i Símbols Químics</p>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white">Informe de Rendiment Acadèmic</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pràctica de Nomenclatura i Símbols Químics</p>
       </div>
 
-      <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
-        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-          <span class="text-slate-500 font-medium">Alumne/a:</span>
-          <span id="report-student-name" class="font-bold text-sky-700 text-sm"></span>
+      <div class="space-y-3 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Alumne/a:</span>
+          <span id="report-student-name" class="font-bold text-sky-700 dark:text-sky-400 text-sm"></span>
         </div>
-        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-          <span class="text-slate-500 font-medium">Data i Hora de finalització:</span>
-          <span id="report-timestamp" class="font-mono text-slate-800"></span>
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Data i Hora de finalització:</span>
+          <span id="report-timestamp" class="font-mono text-slate-800 dark:text-slate-200"></span>
         </div>
-        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-          <span class="text-slate-500 font-medium">Mode de joc utilitzat:</span>
-          <span id="report-mode" class="font-semibold text-slate-800"></span>
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Mode de joc utilitzat:</span>
+          <span id="report-mode" class="font-semibold text-slate-800 dark:text-slate-200"></span>
         </div>
         <div class="grid grid-cols-3 gap-2 pt-2 text-center">
-          <div class="bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
-            <div class="text-[10px] text-emerald-700 uppercase font-bold">Encerts</div>
-            <div id="report-correct" class="text-lg font-black text-emerald-700">0</div>
+          <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-2 rounded-lg">
+            <div class="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-bold">Encerts</div>
+            <div id="report-correct" class="text-lg font-black text-emerald-700 dark:text-emerald-400">0</div>
           </div>
-          <div class="bg-rose-50 border border-rose-200 p-2 rounded-lg">
-            <div class="text-[10px] text-rose-700 uppercase font-bold">Errors</div>
-            <div id="report-incorrect" class="text-lg font-black text-rose-700">0</div>
+          <div class="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 p-2 rounded-lg">
+            <div class="text-[10px] text-rose-700 dark:text-rose-400 uppercase font-bold">Errors</div>
+            <div id="report-incorrect" class="text-lg font-black text-rose-700 dark:text-rose-400">0</div>
           </div>
-          <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg">
-            <div class="text-[10px] text-amber-700 uppercase font-bold">Ratxa Màxima</div>
-            <div id="report-max-streak" class="text-lg font-black text-amber-700">0 🔥</div>
+          <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2 rounded-lg">
+            <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-bold">Ratxa Màxima</div>
+            <div id="report-max-streak" class="text-lg font-black text-amber-700 dark:text-amber-400">0 🔥</div>
           </div>
         </div>
         <div class="text-center pt-2">
-          <span class="text-slate-500">Percentatge d'encert global: </span>
-          <span id="report-accuracy" class="font-bold text-sky-700 text-sm">0%</span>
+          <span class="text-slate-500 dark:text-slate-400">Percentatge d'encert global: </span>
+          <span id="report-accuracy" class="font-bold text-sky-700 dark:text-sky-400 text-sm">0%</span>
         </div>
       </div>
 
       <div class="flex gap-3 justify-end pt-2">
-        <button onclick="closeFinalReportModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2.5 rounded-lg text-xs font-semibold transition-colors">Continuar Practicant</button>
+        <button onclick="closeFinalReportModal()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 px-4 py-2.5 rounded-lg text-xs font-semibold transition-colors">Continuar Practicant</button>
         <button onclick="restartGame(); closeFinalReportModal();" class="bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-xs font-semibold transition-colors">Nova Sessió</button>
       </div>
 
@@ -258,7 +284,7 @@
   </div>
 
   <!-- PEU DE PÀGINA -->
-  <footer class="bg-white border-t border-slate-200 py-2 px-4 text-center text-xs text-slate-500">
+  <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-2 px-4 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
     Aplicació Educativa de Química — Dissenyada per a GitHub Pages
   </footer>
 
@@ -374,6 +400,21 @@
     let questionQueue = [];
     let mistakes = [];
 
+    // Commutació de mode clar/fosc
+    function toggleDarkMode() {
+      const htmlEl = document.documentElement;
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        htmlEl.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlEl.classList.add('dark');
+        htmlEl.classList.remove('light');
+        localStorage.setItem('theme', 'dark');
+      }
+      updateGridDisplay();
+    }
+
     function shuffleArray(array) {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -417,15 +458,15 @@
         const isActive = currentElement && currentElement.z === el.z;
 
         if (currentMode === 'study') {
-          cell.className = 'element-cell bg-white border-slate-300 text-slate-800 hover:bg-sky-50 hover:border-sky-500 shadow-sm';
+          cell.className = 'element-cell bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-sky-950/60 hover:border-sky-500 shadow-sm';
           cell.innerHTML = `
-            <span class="text-[9px] text-slate-500 font-mono w-full text-left pl-0.5">${el.z}</span>
-            <span class="font-bold text-xs text-sky-700">${el.symbol}</span>
-            <span class="text-[8px] text-slate-600 truncate w-full text-center px-0.5">${el.name}</span>
+            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono w-full text-left pl-0.5">${el.z}</span>
+            <span class="font-bold text-xs text-sky-700 dark:text-sky-400">${el.symbol}</span>
+            <span class="text-[8px] text-slate-600 dark:text-slate-300 truncate w-full text-center px-0.5">${el.name}</span>
           `;
         } else {
           if (isActive) {
-            cell.className = 'element-cell bg-sky-600 border-2 border-sky-400 text-white font-bold shadow-lg shadow-sky-500/20 scale-105 z-10';
+            cell.className = 'element-cell bg-sky-600 dark:bg-sky-600 border-2 border-sky-400 dark:border-sky-300 text-white font-bold shadow-lg shadow-sky-500/20 scale-105 z-10';
             if (currentQuestionType === 'sym-name') {
               cell.innerHTML = `
                 <span class="text-[9px] text-sky-100 font-mono w-full text-left pl-0.5">${el.z}</span>
@@ -440,9 +481,9 @@
               `;
             }
           } else {
-            cell.className = 'element-cell bg-slate-100/80 border-slate-200 text-slate-400 opacity-60 hover:opacity-100';
+            cell.className = 'element-cell bg-slate-100/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 opacity-60 hover:opacity-100';
             cell.innerHTML = `
-              <span class="text-[8px] font-mono text-slate-400">${el.z}</span>
+              <span class="text-[8px] font-mono text-slate-400 dark:text-slate-500">${el.z}</span>
             `;
           }
         }
@@ -472,7 +513,7 @@
         if (key === mode) {
           buttons[key].className = 'px-3 py-1.5 rounded-md font-medium transition-colors bg-sky-600 text-white shadow-sm';
         } else {
-          buttons[key].className = 'px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 hover:text-slate-900';
+          buttons[key].className = 'px-3 py-1.5 rounded-md font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white';
         }
       });
 
@@ -515,7 +556,9 @@
       const hintText = document.getElementById('group-period-hint');
       const targetMainText = document.getElementById('target-main-text');
 
-      katex.render(`Z = ${currentElement.z}`, document.getElementById('target-z-katex'), { displayMode: false });
+      if (window.katex) {
+        katex.render(`Z = ${currentElement.z}`, document.getElementById('target-z-katex'), { displayMode: false });
+      }
 
       if (currentMode === 'study') {
         promptType.textContent = 'Explorador Didàctic';
@@ -567,7 +610,7 @@
       const btn = document.getElementById('btn-action');
 
       if (!userVal) {
-        feedback.className = 'min-h-[24px] text-xs font-medium text-amber-600';
+        feedback.className = 'min-h-[24px] text-xs font-medium text-amber-600 dark:text-amber-400';
         feedback.textContent = 'Per favor, escriu una resposta abans de comprovar.';
         return;
       }
@@ -602,13 +645,13 @@
         if (stats.streak > stats.maxStreak) stats.maxStreak = stats.streak;
 
         playTone(600, 'sine', 0.15);
-        feedback.className = 'min-h-[24px] text-xs font-semibold text-emerald-700';
+        feedback.className = 'min-h-[24px] text-xs font-semibold text-emerald-700 dark:text-emerald-400';
         feedback.innerHTML = `✓ Excel·lent! Resposta correcta.`;
       } else {
         stats.incorrect++;
         stats.streak = 0;
         playTone(220, 'sawtooth', 0.25);
-        feedback.className = 'min-h-[24px] text-xs font-semibold text-rose-700';
+        feedback.className = 'min-h-[24px] text-xs font-semibold text-rose-700 dark:text-rose-400';
         feedback.innerHTML = `✗ Incorrecte. La resposta correcta és **${expected}**.${warningNote}`;
 
         mistakes.push({
@@ -665,25 +708,25 @@
         list.innerHTML = `
           <div class="text-center py-8 flex flex-col items-center gap-2">
             <span class="text-2xl">🎉</span>
-            <p class="text-xs text-slate-500 font-medium">No has comès cap errada encara!</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">No has comès cap errada encara!</p>
           </div>
         `;
       } else {
         mistakes.forEach((item, index) => {
           const div = document.createElement('div');
-          div.className = 'bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between items-center text-xs gap-2';
+          div.className = 'bg-slate-50 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs gap-2';
           
           const promptDesc = item.questionType === 'sym-name' 
-            ? `Nom de <strong class="text-sky-700">${item.element.symbol}</strong> (Z=${item.element.z})` 
-            : `Símbol de <strong class="text-sky-700">${item.element.name}</strong> (Z=${item.element.z})`;
+            ? `Nom de <strong class="text-sky-700 dark:text-sky-400">${item.element.symbol}</strong> (Z=${item.element.z})` 
+            : `Símbol de <strong class="text-sky-700 dark:text-sky-400">${item.element.name}</strong> (Z=${item.element.z})`;
           
           div.innerHTML = `
             <div>
-              <p class="text-slate-800 font-medium">${index + 1}. ${promptDesc}</p>
-              <p class="text-rose-600 text-[11px] mt-0.5">La teva resposta: <span class="line-through opacity-80">${item.userAnswer}</span></p>
+              <p class="text-slate-800 dark:text-slate-200 font-medium">${index + 1}. ${promptDesc}</p>
+              <p class="text-rose-600 dark:text-rose-400 text-[11px] mt-0.5">La teva resposta: <span class="line-through opacity-80">${item.userAnswer}</span></p>
             </div>
             <div class="text-right shrink-0">
-              <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md text-[11px]">
+              <span class="text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md text-[11px]">
                 ${item.correctAnswer}
               </span>
             </div>
