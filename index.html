@@ -37,7 +37,6 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
   <style>
-    /* Estils personalitzats per a la graella de la Taula Periòdica */
     .pt-grid {
       display: grid;
       grid-template-columns: repeat(18, minmax(0, 1fr));
@@ -57,8 +56,8 @@
       transition: all 0.2s ease;
     }
 
-    /* Scrollbar personalitzada per a dispositius petits */
     .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
@@ -95,11 +94,27 @@
         <button id="mode-study" onclick="setGameMode('study')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-400 hover:text-slate-200">Explorador</button>
       </div>
 
-      <!-- MARCADOR -->
-      <div class="flex items-center gap-4 bg-slate-800/80 px-4 py-1.5 rounded-lg border border-slate-700 text-xs font-semibold">
-        <div class="text-emerald-400">Encerts: <span id="score-correct">0</span></div>
-        <div class="text-rose-400">Errors: <span id="score-incorrect">0</span></div>
-        <div class="text-amber-400">Ratxa: <span id="score-streak">0</span> 🔥</div>
+      <!-- MARCADOR I ACCIONS -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-4 bg-slate-800/80 px-4 py-1.5 rounded-lg border border-slate-700 text-xs font-semibold">
+          <div class="text-emerald-400">Encerts: <span id="score-correct">0</span></div>
+          <div class="text-rose-400">Errors: <span id="score-incorrect">0</span></div>
+          <div class="text-amber-400">Ratxa: <span id="score-streak">0</span> 🔥</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Botó Veure Errades -->
+          <button id="btn-mistakes" onclick="openMistakesModal()" class="bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span id="mistakes-count-label">Errades (0)</span>
+          </button>
+
+          <!-- Botó Reiniciar -->
+          <button onclick="restartGame()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Reiniciar</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -156,6 +171,27 @@
 
   </main>
 
+  <!-- MODAL D'ERRADES -->
+  <div id="mistakes-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4 max-h-[80vh]">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>Historial d'Errades Realitzades</span>
+        </h3>
+        <button onclick="closeMistakesModal()" class="text-slate-400 hover:text-white font-bold p-1 rounded">✕</button>
+      </div>
+      
+      <div id="mistakes-list" class="overflow-y-auto flex-grow flex flex-col gap-2 pr-1 custom-scrollbar">
+        <!-- Es construeix dinàmicament per JS -->
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="closeMistakesModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold">Tancar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PEU DE PÀGINA -->
   <footer class="bg-slate-900/50 border-t border-slate-800/60 py-2 px-4 text-center text-xs text-slate-500">
     Aplicació Educativa de Química — Dissenyada per a GitHub Pages
@@ -163,7 +199,6 @@
 
   <!-- LÒGICA EN JAVASCRIPT -->
   <script>
-    // Dades dels 77 elements requerits amb coordenades exactes de Grup (1-18) i Període (1-7, 9-10)
     const elementsData = [
       // Grup 1
       { z: 1, name: 'Hidrogen', symbol: 'H', group: 1, period: 1 },
@@ -256,25 +291,24 @@
       { z: 36, name: 'Criptó', symbol: 'Kr', group: 18, period: 4 },
       { z: 54, name: 'Xenó', symbol: 'Xe', group: 18, period: 5 },
       { z: 86, name: 'Radó', symbol: 'Rn', group: 18, period: 6 },
-      // Lantanoides (Fila especial 9, Columna 3)
+      // Lantanoides
       { z: 57, name: 'Lantani', symbol: 'La', group: 3, period: 9 },
-      // Actinoides (Fila especial 10, Columnes 3, 6, 8)
+      // Actinoides
       { z: 89, name: 'Actini', symbol: 'Ac', group: 3, period: 10 },
       { z: 92, name: 'Urani', symbol: 'U', group: 6, period: 10 },
       { z: 94, name: 'Plutoni', symbol: 'Pu', group: 8, period: 10 }
     ];
 
     // Estat de l'aplicació
-    let currentMode = 'sym-name'; // 'sym-name', 'name-sym', 'mixed', 'study'
-    let currentQuestionType = 'sym-name'; // 'sym-name' o 'name-sym' per a la pregunta activa
+    let currentMode = 'sym-name';
+    let currentQuestionType = 'sym-name';
     let currentElement = null;
-    let gameState = 'asking'; // 'asking' o 'feedback'
+    let gameState = 'asking';
     let stats = { correct: 0, incorrect: 0, streak: 0 };
-
-    // Cua d'elements pendents de ser preguntats (sense repetició)
+    
     let questionQueue = [];
+    let mistakes = []; // Registre d'errades acumulades
 
-    // Funció per barrejar un array utilitzant l'algorisme Fisher-Yates
     function shuffleArray(array) {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -284,12 +318,10 @@
       return shuffled;
     }
 
-    // Inicialitza o reinicia la cua d'elements en ordre aleatori sense repetició
     function initQuestionQueue() {
       questionQueue = shuffleArray(elementsData);
     }
 
-    // Inicialització en carregar la pàgina
     window.addEventListener('DOMContentLoaded', () => {
       renderPeriodicTableGrid();
       setupEventListeners();
@@ -297,7 +329,6 @@
       nextQuestion();
     });
 
-    // Renderitza la graella completa de la taula periòdica amb coordenades exactes
     function renderPeriodicTableGrid() {
       const grid = document.getElementById('periodic-table-grid');
       grid.innerHTML = '';
@@ -308,14 +339,11 @@
         cell.className = 'element-cell border transition-all cursor-pointer';
         cell.style.gridColumn = el.group;
         cell.style.gridRow = el.period;
-        
         cell.onclick = () => onCellClick(el);
-
         grid.appendChild(cell);
       });
     }
 
-    // Actualitza l'aspecte de cada casella segons el mode actual i la pregunta activa
     function updateGridDisplay() {
       elementsData.forEach(el => {
         const cell = document.getElementById(`cell-${el.z}`);
@@ -324,7 +352,6 @@
         const isActive = currentElement && currentElement.z === el.z;
 
         if (currentMode === 'study') {
-          // Mode Explorador: mostra tots els símbols i noms
           cell.className = 'element-cell bg-slate-800/90 border-slate-700 text-slate-200 hover:bg-sky-900/60 hover:border-sky-500';
           cell.innerHTML = `
             <span class="text-[9px] text-slate-400 font-mono w-full text-left pl-0.5">${el.z}</span>
@@ -333,18 +360,14 @@
           `;
         } else {
           if (isActive) {
-            // Element actiu de la pregunta
             cell.className = 'element-cell bg-sky-600 border-2 border-sky-300 text-white font-bold shadow-lg shadow-sky-500/30 scale-105 z-10';
-            
             if (currentQuestionType === 'sym-name') {
-              // Si es demana el nom, la casella NOMÉS mostra el símbol (IUPAC)
               cell.innerHTML = `
                 <span class="text-[9px] text-sky-200 font-mono w-full text-left pl-0.5">${el.z}</span>
                 <span class="font-extrabold text-sm text-white">${el.symbol}</span>
                 <span class="text-[8px] text-sky-200 font-mono">?</span>
               `;
             } else {
-              // Si es demana el símbol, la casella NOMÉS mostra el nom
               cell.innerHTML = `
                 <span class="text-[9px] text-sky-200 font-mono w-full text-left pl-0.5">${el.z}</span>
                 <span class="text-[9px] font-bold text-white text-center leading-tight px-0.5 mt-1">${el.name}</span>
@@ -352,7 +375,6 @@
               `;
             }
           } else {
-            // Resta de caselles en blanc (estructura contornada transparent)
             cell.className = 'element-cell bg-slate-900/40 border-slate-800/80 text-slate-600 opacity-60 hover:opacity-100';
             cell.innerHTML = `
               <span class="text-[8px] font-mono text-slate-600/60">${el.z}</span>
@@ -362,11 +384,8 @@
       });
     }
 
-    // Canvia el mode de joc
     function setGameMode(mode) {
       currentMode = mode;
-      
-      // Reiniciem la cua quan es canvia de mode per començar un nou cicle dels 77 elements
       initQuestionQueue();
 
       const buttons = {
@@ -387,7 +406,6 @@
       nextQuestion();
     }
 
-    // Carrega la següent pregunta extreta de la cua sense repetir cap element
     function nextQuestion() {
       gameState = 'asking';
 
@@ -395,15 +413,11 @@
         currentQuestionType = 'study';
         if (!currentElement) currentElement = elementsData[0];
       } else {
-        // Si hem esgotat els 77 elements de la cua, la tornem a generar i barrejar
         if (questionQueue.length === 0) {
           initQuestionQueue();
         }
-
-        // Extreiem el següent element de la cua sense repetir
         currentElement = questionQueue.pop();
 
-        // Determinar tipus de pregunta
         if (currentMode === 'mixed') {
           currentQuestionType = Math.random() < 0.5 ? 'sym-name' : 'name-sym';
         } else {
@@ -411,7 +425,6 @@
         }
       }
 
-      // Netejar entrades i missatges
       const input = document.getElementById('user-input');
       const feedback = document.getElementById('feedback-message');
       const btn = document.getElementById('btn-action');
@@ -423,13 +436,11 @@
       btn.innerHTML = `<span>Comprovar</span><kbd class="hidden sm:inline-block bg-sky-800/80 px-1.5 py-0.5 rounded text-[10px] text-sky-200">Enter</kbd>`;
       btn.className = 'bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md';
 
-      // Actualitzar text de pregunta
       const promptType = document.getElementById('question-prompt-type');
       const questionText = document.getElementById('question-text');
       const hintText = document.getElementById('group-period-hint');
       const targetMainText = document.getElementById('target-main-text');
 
-      // Renderització amb KaTeX del nombre atòmic Z
       katex.render(`Z = ${currentElement.z}`, document.getElementById('target-z-katex'), { displayMode: false });
 
       if (currentMode === 'study') {
@@ -456,7 +467,6 @@
       }
     }
 
-    // Gestió del flux del botó i tecla Enter
     function handleUserSubmit() {
       if (currentMode === 'study') return;
 
@@ -467,17 +477,16 @@
       }
     }
 
-    // Normalització de text per comparar cadenes en català
-    function normalizeText(str) {
+    // Normalització auxiliar només per indicar la causa de l'error ortogràfic
+    function normalizeTextForHint(str) {
       return str
         .trim()
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/·/g, ""); // Normalitza geminada per a la comparació
+        .replace(/·/g, "");
     }
 
-    // Avaluació de la resposta de l'alumne
     function evaluateAnswer() {
       const input = document.getElementById('user-input');
       const userVal = input.value.trim();
@@ -492,20 +501,21 @@
 
       let isCorrect = false;
       let warningNote = '';
+      const expected = currentQuestionType === 'sym-name' ? currentElement.name : currentElement.symbol;
 
       if (currentQuestionType === 'sym-name') {
-        // Avaluació de NOMS
-        const targetNormalized = normalizeText(currentElement.name);
-        const userNormalized = normalizeText(userVal);
-
-        if (userNormalized === targetNormalized) {
+        // Criteri de correcció estricte (accents, ela geminada l·l i dobles s)
+        if (userVal.toLowerCase() === currentElement.name.toLowerCase()) {
           isCorrect = true;
-          if (userVal.toLowerCase() !== currentElement.name.toLowerCase()) {
-            warningNote = ` (Atenció a l'ortografia: és **${currentElement.name}**)`;
+        } else {
+          isCorrect = false;
+          // Si la resposta coincideix només treient accents/caràcters, s'especifica l'error ortogràfic
+          if (normalizeTextForHint(userVal) === normalizeTextForHint(currentElement.name)) {
+            warningNote = ' — Atenció: les faltes d\'accentuació o grafia (com l·l o dobles s) es consideren errors.';
           }
         }
       } else {
-        // Avaluació de SÍMBOLS (Norma IUPAC: majúscula/minúscula)
+        // Criteri estricte IUPAC per a símbols (1a majúscula, 2a minúscula)
         if (userVal === currentElement.symbol) {
           isCorrect = true;
         } else if (userVal.toLowerCase() === currentElement.symbol.toLowerCase()) {
@@ -521,29 +531,94 @@
         stats.streak++;
         playTone(600, 'sine', 0.15);
         feedback.className = 'min-h-[24px] text-xs font-semibold text-emerald-400';
-        feedback.innerHTML = `✓ Excel·lent! Resposta correcta.${warningNote}`;
+        feedback.innerHTML = `✓ Excel·lent! Resposta correcta.`;
       } else {
         stats.incorrect++;
         stats.streak = 0;
         playTone(220, 'sawtooth', 0.25);
         feedback.className = 'min-h-[24px] text-xs font-semibold text-rose-400';
-        const expected = currentQuestionType === 'sym-name' ? currentElement.name : currentElement.symbol;
         feedback.innerHTML = `✗ Incorrecte. La resposta correcta és **${expected}**.${warningNote}`;
+
+        // Registre de l'errada comès
+        mistakes.push({
+          element: currentElement,
+          userAnswer: userVal,
+          correctAnswer: expected,
+          questionType: currentQuestionType
+        });
+        updateMistakesCountUI();
       }
 
-      // Actualitzar marcadors
       document.getElementById('score-correct').textContent = stats.correct;
       document.getElementById('score-incorrect').textContent = stats.incorrect;
       document.getElementById('score-streak').textContent = stats.streak;
 
-      // Canviar botó a "Següent" i passar el focus per poder prémer Enter de nou
       btn.innerHTML = `<span>Següent</span><kbd class="hidden sm:inline-block bg-sky-800/80 px-1.5 py-0.5 rounded text-[10px] text-sky-200">Enter</kbd>`;
       btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md';
       
       btn.focus();
     }
 
-    // Clic directament sobre una casella de la taula
+    function restartGame() {
+      stats = { correct: 0, incorrect: 0, streak: 0 };
+      mistakes = [];
+
+      document.getElementById('score-correct').textContent = '0';
+      document.getElementById('score-incorrect').textContent = '0';
+      document.getElementById('score-streak').textContent = '0';
+      updateMistakesCountUI();
+
+      initQuestionQueue();
+      nextQuestion();
+    }
+
+    function updateMistakesCountUI() {
+      document.getElementById('mistakes-count-label').textContent = `Errades (${mistakes.length})`;
+    }
+
+    function openMistakesModal() {
+      const modal = document.getElementById('mistakes-modal');
+      const list = document.getElementById('mistakes-list');
+      list.innerHTML = '';
+
+      if (mistakes.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-8 flex flex-col items-center gap-2">
+            <span class="text-2xl">🎉</span>
+            <p class="text-xs text-slate-400 font-medium">No has comès cap errada encara!</p>
+          </div>
+        `;
+      } else {
+        mistakes.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = 'bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs gap-2';
+          
+          const promptDesc = item.questionType === 'sym-name' 
+            ? `Nom de <strong class="text-sky-300">${item.element.symbol}</strong> (Z=${item.element.z})` 
+            : `Símbol de <strong class="text-sky-300">${item.element.name}</strong> (Z=${item.element.z})`;
+          
+          div.innerHTML = `
+            <div>
+              <p class="text-slate-300 font-medium">${index + 1}. ${promptDesc}</p>
+              <p class="text-rose-400 text-[11px] mt-0.5">La teva resposta: <span class="line-through opacity-80">${item.userAnswer}</span></p>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-md text-[11px]">
+                ${item.correctAnswer}
+              </span>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeMistakesModal() {
+      document.getElementById('mistakes-modal').classList.add('hidden');
+    }
+
     function onCellClick(element) {
       if (currentMode === 'study') {
         currentElement = element;
@@ -551,7 +626,6 @@
       }
     }
 
-    // Escoltar esdeveniments de teclat
     function setupEventListeners() {
       const input = document.getElementById('user-input');
       
@@ -567,10 +641,12 @@
           e.preventDefault();
           handleUserSubmit();
         }
+        if (e.key === 'Escape') {
+          closeMistakesModal();
+        }
       });
     }
 
-    // Efectes de so senzills amb Web Audio API
     function playTone(freq, type, duration) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
