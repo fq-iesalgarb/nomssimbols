@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pràctica de la Taula Periòdica - Química</title>
+  
+  <!-- Favicon personalitzat -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   
   <!-- Tailwind CSS CDN -->
@@ -76,7 +78,7 @@
       <div class="flex items-center gap-3">
         <div class="p-2 bg-sky-500/10 border border-sky-500/30 rounded-lg">
           <svg class="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
           </svg>
         </div>
         <div>
@@ -87,8 +89,8 @@
 
       <!-- SELECTOR DE MODE -->
       <div class="flex items-center gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
-        <button id="mode-sym-name" onclick="setGameMode('sym-name')" class="px-3 py-1.5 rounded-md font-medium transition-colors bg-sky-600 text-white">Símbol &rarr; Nom</button>
-        <button id="mode-name-sym" onclick="setGameMode('name-sym')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-400 hover:text-slate-200">Nom &rarr; Símbol</button>
+        <button id="mode-sym-name" onclick="setGameMode('sym-name')" class="px-3 py-1.5 rounded-md font-medium transition-colors bg-sky-600 text-white">Símbol → Nom</button>
+        <button id="mode-name-sym" onclick="setGameMode('name-sym')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-400 hover:text-slate-200">Nom → Símbol</button>
         <button id="mode-mixed" onclick="setGameMode('mixed')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-400 hover:text-slate-200">Mixt</button>
         <button id="mode-study" onclick="setGameMode('study')" class="px-3 py-1.5 rounded-md font-medium transition-colors text-slate-400 hover:text-slate-200">Explorador</button>
       </div>
@@ -115,8 +117,8 @@
             <span id="target-main-text" class="text-2xl font-black text-white"></span>
           </div>
           <div>
-            <span id="question-prompt-type" class="text-xs uppercase tracking-wider text-sky-400 font-semibold">Pregunta</span>
-            <h2 id="question-text" class="text-lg font-bold text-slate-100">Carregant pregunta...</h2>
+            <span id="question-prompt-type" class="text-xs uppercase tracking-wider text-sky-400 font-semibold"></span>
+            <h2 id="question-text" class="text-lg font-bold text-slate-100"></h2>
             <p id="group-period-hint" class="text-xs text-slate-400 mt-0.5"></p>
           </div>
         </div>
@@ -124,18 +126,8 @@
         <!-- Formulari d'Entrada -->
         <div id="interaction-form" class="w-full md:w-auto flex-1 max-w-md flex flex-col gap-2">
           <div class="flex gap-2">
-            <input 
-              type="text" 
-              id="user-input" 
-              placeholder="Escriu la teva resposta..." 
-              autocomplete="off"
-              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-medium text-sm transition-all"
-            >
-            <button 
-              id="btn-action" 
-              onclick="handleUserSubmit()" 
-              class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md"
-            >
+            <input type="text" id="user-input" placeholder="Escriu la teva resposta..." autocomplete="off" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-medium text-sm transition-all">
+            <button id="btn-action" onclick="handleUserSubmit()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm flex items-center gap-1.5 shrink-0 shadow-md">
               <span>Comprovar</span>
               <kbd class="hidden sm:inline-block bg-sky-800/80 px-1.5 py-0.5 rounded text-[10px] text-sky-200">Enter</kbd>
             </button>
@@ -158,9 +150,7 @@
       </div>
 
       <!-- Graella principal de la Taula Periòdica -->
-      <div id="periodic-table-grid" class="pt-grid min-w-[850px]">
-        <!-- Les caselles de la taula periòdica es generen dinàmicament -->
-      </div>
+      <div id="periodic-table-grid" class="pt-grid min-w-[850px]"></div>
 
     </div>
 
@@ -173,7 +163,7 @@
 
   <!-- LÒGICA EN JAVASCRIPT -->
   <script>
-    // Dades dels 70 elements requerits amb coordenades exactes de Grup (1-18) i Període (1-7, 9-10)
+    // Dades dels 77 elements requerits amb coordenades exactes de Grup (1-18) i Període (1-7, 9-10)
     const elementsData = [
       // Grup 1
       { z: 1, name: 'Hidrogen', symbol: 'H', group: 1, period: 1 },
@@ -281,10 +271,29 @@
     let gameState = 'asking'; // 'asking' o 'feedback'
     let stats = { correct: 0, incorrect: 0, streak: 0 };
 
+    // Cua d'elements pendents de ser preguntats (sense repetició)
+    let questionQueue = [];
+
+    // Funció per barrejar un array utilitzant l'algorisme Fisher-Yates
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // Inicialitza o reinicia la cua d'elements en ordre aleatori sense repetició
+    function initQuestionQueue() {
+      questionQueue = shuffleArray(elementsData);
+    }
+
     // Inicialització en carregar la pàgina
     window.addEventListener('DOMContentLoaded', () => {
       renderPeriodicTableGrid();
       setupEventListeners();
+      initQuestionQueue();
       nextQuestion();
     });
 
@@ -357,6 +366,9 @@
     function setGameMode(mode) {
       currentMode = mode;
       
+      // Reiniciem la cua quan es canvia de mode per començar un nou cicle dels 77 elements
+      initQuestionQueue();
+
       const buttons = {
         'sym-name': document.getElementById('mode-sym-name'),
         'name-sym': document.getElementById('mode-name-sym'),
@@ -375,21 +387,28 @@
       nextQuestion();
     }
 
-    // Carrega la següent pregunta aleatòria
+    // Carrega la següent pregunta extreta de la cua sense repetir cap element
     function nextQuestion() {
       gameState = 'asking';
-      
-      // Triar element aleatori
-      const randomIndex = Math.floor(Math.random() * elementsData.length);
-      currentElement = elementsData[randomIndex];
 
-      // Determinar tipus de pregunta
-      if (currentMode === 'mixed') {
-        currentQuestionType = Math.random() < 0.5 ? 'sym-name' : 'name-sym';
-      } else if (currentMode === 'study') {
+      if (currentMode === 'study') {
         currentQuestionType = 'study';
+        if (!currentElement) currentElement = elementsData[0];
       } else {
-        currentQuestionType = currentMode;
+        // Si hem esgotat els 77 elements de la cua, la tornem a generar i barrejar
+        if (questionQueue.length === 0) {
+          initQuestionQueue();
+        }
+
+        // Extreiem el següent element de la cua sense repetir
+        currentElement = questionQueue.pop();
+
+        // Determinar tipus de pregunta
+        if (currentMode === 'mixed') {
+          currentQuestionType = Math.random() < 0.5 ? 'sym-name' : 'name-sym';
+        } else {
+          currentQuestionType = currentMode;
+        }
       }
 
       // Netejar entrades i missatges
@@ -568,5 +587,6 @@
       } catch (e) {}
     }
   </script>
+
 </body>
 </html>
